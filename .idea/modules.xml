@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Highcharts.iml" filepath="$PROJECT_DIR$/.idea/Highcharts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/funfinance.iml" filepath="$PROJECT_DIR$/.idea/funfinance.iml" />
     </modules>
   </component>
 </project>
