@@ -2,19 +2,24 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="apple-mobile-web-app-capable" content="yes">
         <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
 
 		<title>Pinch demo - mroomer</title>
 
-        <link rel="stylesheet" href="./css/jquery/mobile/jquery.mobile-1.2.1.min.css" />
+        <link rel="stylesheet" href="./css/jquery/mobile/jquery.mobile-1.2.1.css" />
+        <link rel="stylesheet" href="./css/style.css" />
 
         <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>-->
         <!--<script src="../../js/jquery/jquery-1.8.2.min.js"></script>-->
         <script src="./js/jquery/jquery-1.8.2.js"></script>
-        <script src="./js/jquery/mobile/jquery.mobile-1.2.1.min.js"></script>
-        <script src="./js/highstock.js"></script>
+        <script src="./js/jquery/mobile/jquery.mobile-1.2.1.js"></script>
+        <script src="./js/highcharts.src.js"></script>
+        <script src="./js/highcharts-more.src.js"></script>
+        <script src="./js/dark-unica.js"></script>
 
 		<script type="text/javascript">
+            var cash = 500, bed = 5;
 
             // generate an array of random data
             /*var data = [],
@@ -38,7 +43,7 @@
             }
 
             function createChart() {
-                $('#container').highcharts("StockChart",{
+                $('#container').highcharts({
                 chart: {
                     zoomType: 'x',
                     events: {
@@ -53,6 +58,8 @@
                                     y = randomIntFromInterval(lastpoint.y);
                                 serie.addPoint([x, y], true, true);
                             }, 1000);
+                            showCash(cash);
+                            showBed(bed);
                         },
                         click: function(e) {
                             $tijd = Highcharts.dateFormat('%H:%M:%S', e.xAxis[0].value);
@@ -61,15 +68,18 @@
                                     e.xAxis[0].value,
                                     e.yAxis[0].value
                             );
-                            this.series[1].addPoint([e.xAxis[0].value,e.yAxis[0].value],true,false,false);
+                            //this.series[1].addPoint([e.xAxis[0].value,e.yAxis[0].value],true,false,false);
+                            this.series[1].addPoint([e.xAxis[0].value,e.yAxis[0].value-1,e.yAxis[0].value],true,false,false);
                             var point = this.series[1].data[this.series[1].data.length-1];
                             //var point = chart.series[0].data[8];
 
 
-                            x = point.plotX ; //+ this.plotLeft + 10;
+                            /*x = point.plotX ; //+ this.plotLeft + 10;
                             y = point.plotY ; //+ this.plotTop - 10;
-                            this.renderer.image('./euro-70x70.png',x, y, 30, 30)
-                                    .add();
+                            this.renderer.image('./euro-70x70.png',x, y, 30, 30).add();*/
+
+                            cash -= bed;
+                            showCash(cash);
                         }
                     }
                 },
@@ -81,58 +91,24 @@
                         'Click and drag in the plot area to zoom in' :
                         'Pinch the chart to zoom in'
                 },*/
-                scrollbar : {
-                    enabled : false
-                },
-                rangeSelector: {
-                    //inputEnabled: $('#container').width() > 480,
-                    allButtonsEnabled: true,
-                    buttons: [{
-                        type: 'second',
-                        count: 1,
-                        text: '1s'
-                    }, {
-                        type: 'second',
-                        count: 10,
-                        text: '10s'
-                    }, {
-                        type: 'second',
-                        count: 30,
-                        text: '30s'
-                    }, {
-                        type: 'all',
-                        text: 'All'
-                    }],
-                    selected: 2
-                },
-                navigator : {
-                    enabled: false
-                },
                 xAxis: {
                     type: 'datetime',
-                    /*dateTimeLabelFormat : {
-                        millisecond: '%H:%M:%S.%L',
-                        second: '%H:%M:%S',
-                        minute: '%H:%M',
-                        hour: '%H:%M',
-                        day: '%e. %b',
-                        week: '%e. %b',
-                        month: '%b \'%y',
-                        year: '%Y'
-                    },*/
                     //tickInterval: 7 * 24 * 3600 * 1000, // one week
                     //startOnTick: false,
                     //endOnTick: false,
-                    minRange: 36000,
-                    minPadding: 0.6,
-                    maxPadding: 0.6
+                    min: Date.UTC(2014, 0, 01) + (60000 * 5),
+                    max: Date.UTC(2014, 0, 01) + (3600 * 1000),
+                    minRange: 36000
+                    //maxPadding: 0.6
                 },
                 yAxis: {
                     title: {
                         text: 'Exchange rate'
-                    }
+                    },
+                    max: 0.8,
+                    min: 0.6
                 },
-                tooltip: {
+                /*tooltip: {
                     pointFormat: '{series.name}: <b>{point.x}</b><br/>',
                     valueSuffix: ' €',
                     xDateFormat: '%d-%m-%Y',
@@ -144,9 +120,9 @@
                         color: 'black',
                         dashStyle: 'shortdot'
                     }]
-                },
+                },*/
                 legend: {
-                    enabled: true
+                    enabled: false
                 },
 
 
@@ -272,6 +248,13 @@
                         0.714, 0.7119, 0.7129, 0.7129, 0.7049, 0.7095
                     ]
 
+                }, {
+                    type: 'columnrange',
+                    inverted: false,
+                    pointInterval: 1000,
+                    color: '#FF4400'
+                    //data: [[-9.7, 60]]
+                    //pointInterval: 1000
                 }],
                 exporting : {
                     buttons : {
@@ -285,7 +268,55 @@
                     text : 'mroomer 2014'
                 }
             });
-            };
+
+            function showCash(cash) {
+                var chart = $('#container').highcharts();
+                chart.renderer.label(
+                        "Cash: "+cash,
+                        700,
+                        10
+                    )
+                    .attr({
+                        fill: '#00FF00'
+                    })
+                    .add();
+            }
+
+            function showBed(bed) {
+                var chart = $('#container').highcharts();
+                chart.renderer.label(
+                                "Bed: "+bed,
+                        800,
+                        10
+                )
+                        .attr({
+                            fill: '#66CCFF'
+                        })
+                        .add();
+            }
+
+            // the button action
+            $('#button').click(function() {
+                var chart = $('#container').highcharts(),
+                        extremes = chart.xAxis[0].getExtremes();
+
+                chart.renderer.label(
+                    'dataMax: '+ extremes.dataMax +'<br/>'+
+                    'dataMin: '+ extremes.dataMin +'<br/>'+
+                    'max: '+ extremes.max +'<br/>'+
+                    'min: '+ extremes.min +'<br/>',
+                    100,
+                    100
+                )
+                .attr({
+                    fill: '#FCFFC5',
+                    zIndex: 8
+                })
+                .add();
+                //$(this).attr('disabled', true);
+            });
+
+            } // createChart
 
             $(document).ready(createChart);
 		</script>
@@ -294,7 +325,7 @@
 
 
         <!-- Start of first page: #one -->
-        <div data-role="page" id="chartPage" data-position="fixed" data-fullscreen="true">
+        <div data-role="page" id="chartPage" data-position="fixed" data-fullscreen="true" data-theme="a">
 
             <div data-role="header">
                 <h1>Multi-page</h1>
@@ -302,7 +333,7 @@
 
             <div data-role="content" role="main" class="ui-content" >
                 <div id="container" style="height:auto; width:95%;"></div>
-                <div id="report" style="height:200px; width:100%"></div>
+                <button id="button">Get Y axis extremes</button>
             </div><!-- /content -->
 
             <div data-role="footer" data-position="fixed" data-fullscreen="true">
@@ -314,6 +345,16 @@
             </div><!-- /footer -->
 
         </div><!-- /page one -->
+
+        <script>
+            $(function(){
+                $( "div.ui-content" ).bind( "tap", tapHandler );
+
+                function tapHandler( event ){
+                    $( event.target ).addClass( "tap" );
+                }
+            });
+        </script>
 
 	</body>
 </html>
