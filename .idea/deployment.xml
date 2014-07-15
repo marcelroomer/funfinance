@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" persistUploadOnCheckin="false" />
+  <component name="PublishConfigData" autoUpload="Always" serverName="ftp mroomer" persistUploadOnCheckin="false">
+    <serverData>
+      <paths name="Diskstation">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/highcharts" />
+            <excludedPath local="true" path="$PROJECT_DIR$/highstock" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="ftp mroomer">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$/test" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/highcharts" />
+            <excludedPath local="true" path="$PROJECT_DIR$/highstock" />
+            <excludedPath local="true" path="$PROJECT_DIR$/euro-145386_150.png" />
+            <excludedPath local="true" path="$PROJECT_DIR$/euro-70x70.png" />
+            <excludedPath path="/test" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="ftp test">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$/test" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/highcharts" />
+            <excludedPath local="true" path="$PROJECT_DIR$/highstock" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
 </project>
 

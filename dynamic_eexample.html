@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Dynamic Columns - jsFiddle demo by stephanevanraes</title>
+
+    <script type='text/javascript' src='//code.jquery.com/jquery-1.9.1.js'></script>
+
+
+
+
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+    <style type='text/css'>
+
+    </style>
+
+
+
+    <script type='text/javascript'>//<![CDATA[
+
+    $(function () {
+        Highcharts.wrap(Highcharts.seriesTypes.column.prototype, 'setVisible', function (proceed) {
+            proceed.apply(this, [].slice.call(arguments, 1));
+
+            if (this.sideLabel) {
+                this.sideLabel[this.visible ? 'show' : 'hide']();
+            }
+        });
+        Highcharts.wrap(Highcharts.seriesTypes.column.prototype, 'drawPoints', function (proceed) {
+            // Draw the Column like always
+            proceed.apply(this, [].slice.call(arguments, 1));
+
+            // Add a Marker
+            var series = this,
+                    chart = this.chart,
+                    axis = this.yAxis,
+                    value = this.data[0].y, // we know there is only 1 point
+                    label = this.sideLabel,
+                    arrow = this.sideArrow,
+                    ani = label ? 'animate' : 'attr';
+
+            if (!label) {
+                label = this.sideLabel = chart.renderer.label(value)
+                        .attr({
+                            stroke: series.color,
+                            strokeWidth: 1,
+                            zIndex: 8
+                        })
+                        .add();
+
+                // add the arrow
+                arrow = this.sideArrow = chart.renderer.path([
+                    'M', -10, 11,
+                    'L', 0, 5,
+                    'L', 25, 5,
+                    'L', 25, 18,
+                    'L', 0, 18, 'Z'])
+                        .attr({
+                            stroke: series.color,
+                            fill: series.color,
+                            strokeWidth: 1
+                        }).add(label);
+            }
+            label[ani]({
+                translateX: axis.left + axis.width + 10,
+                translateY: axis.top + axis.height - axis.translate(value) - 11,
+                _text: value
+            }, {
+                step: function (val, fx) {
+                    if (fx.prop === '_text') {
+                        this.attr({
+                            text: Math.floor(fx.start + (fx.start - fx.end) * fx.pos)
+                        });
+                    }
+                }
+            });
+        });
+
+        $('#container').highcharts({
+                    chart: {
+                        type: 'column',
+                        marginRight: '80'
+                    },
+                    title: {
+                        text: 'Dynamic Column Chart'
+                    },
+                    subtitle: {
+                        text: 'With markers'
+                    },
+                    tooltip: {
+                        headerFormat: '',
+                    },
+                    legend: {
+                        x: -20
+                    },
+                    yAxis: {
+                        min: 0,
+                        max: 100,
+                        tickInterval: 25,
+                        minorTickInterval: 5,
+                        minorGridLineColor: '#C0C0C0',
+                        minorGridLineDashStyle: 'Dash',
+                        title: {
+                            enabled: false
+                        }
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: false
+                        }
+                    },
+                    series: [{
+                        data: [50],
+                    }, {
+                        data: [50]
+                    }, {
+                        data: [50]
+                    }, {
+                        data: [50]
+                    }]
+                }, // Add some life
+                function (chart) {
+                    setInterval(function () {
+                        Highcharts.each(chart.series, function (serie) {
+                            var point = serie.points[0],
+                                    newVal,
+                                    inc = (Math.random() - 0.5) * 20;
+
+                            newVal = point.y + inc;
+                            if (newVal < 0 || newVal > 100) {
+                                newVal = point.y - inc;
+                            }
+
+                            point.update(Math.floor(newVal));
+                        });
+                    }, 2000);
+
+                });
+    });
+    //]]>
+
+    </script>
+
+
+</head>
+<body>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<div id="container" style="width: 500px; height: 400px;"></div>
+
+</body>
+
+
+</html>
+

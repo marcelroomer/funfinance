@@ -9463,7 +9463,7 @@ Pointer.prototype = {
 
 		// issue #295, dragging not always working in Firefox
 		if (e.preventDefault) {
-			//e.preventDefault();
+			e.preventDefault();
 		}
 		
 		this.dragStart(e);
@@ -9769,7 +9769,7 @@ extend(Highcharts.Pointer.prototype, {
 
 		// On touch devices, only proceed to trigger click if a handler is defined
 		if ((hasZoom || followTouchMove) && !fireClickEvent) {
-			//e.preventDefault();
+			e.preventDefault();
 		}
 		
 		// Normalize each touch
