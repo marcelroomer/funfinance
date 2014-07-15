@@ -1,0 +1,20 @@
+CACHE MANIFEST
+# Ver 1.031
+
+# Explicitly cached entries
+# index.htm
+
+# Add the entire internet to the "white list" of sites that may be accessed by this site.
+# This is needed for TypeKit and Google Analytics
+NETWORK:
+index.htm
+css/style.css
+js/dark-unica.js
+
+# The following files are explicitly cached -
+CACHE:
+css/jquery/mobile/jquery.mobile-1.2.1.css
+js/jquery/jquery-1.8.2.js
+js/jquery/mobile/jquery.mobile-1.2.1.js
+js/highcharts.src.js
+js/highcharts-more.src.js

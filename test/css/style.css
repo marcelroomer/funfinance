@@ -1,0 +1,25 @@
+.chartpage {
+    -webkit-user-select: none;
+    background-color: #d0e4fe;
+}
+
+.containerstyle {
+    -webkit-user-select: none;
+    height: 80%;
+    width: 95%;
+    background-color: darkgray;
+}
+
+.ui-content {
+    -webkit-user-select: none;
+    //background-color: orange;
+}
+
+.debug {
+    -webkit-user-select: none;
+    font-size: 14px
+}
+
+/*[id|="button"] {
+    visibility: hidden;
+}*/
