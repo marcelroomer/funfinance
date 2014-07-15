@@ -27,18 +27,18 @@
 
             function lastPoint() {
                 var chart = $('#container').highcharts();
-                //var l = chart.series[0].points.length;
-                //var p = chart.series[0].points[l-1];
-                var l = chart.series[0].data.length;
-                var p = chart.series[0].data[l-1];
+                //var l = chart.series[1].points.length;
+                //var p = chart.series[1].points[l-1];
+                var l = chart.series[1].data.length;
+                var p = chart.series[1].data[l-1];
                 return p
             }
 
             function lastBar() {
                 var chart = $('#container').highcharts();
-                var l = chart.series[1].data.length;
+                var l = chart.series[2].data.length;
                 if (l>0){
-                    var b = chart.series[1].data[l-1];
+                    var b = chart.series[2].data[l-1];
                     //console.log(toDate(b.x));
                 }
             }
@@ -81,8 +81,9 @@
                         load: function() {
                             var serie, actualLabel, zoomextreme;
                             // set up the updating of the chart each second
-                            serie = this.series[0];
-                            serie2 = this.series[2];
+                            serie = this.series[1];
+                            serie2 = this.series[3];
+                            //serie3 = this.series[3];
 
                             showCash(cash);
                             showBet(bet);
@@ -93,8 +94,12 @@
                                     y = randomIntFromInterval(lastpoint.y);
                                 serie.addPoint([x, y], true, true);
 
-                                //serie2.addPoint([{x:(x+(1000*3600)), y:y}], true, true);
-                                serie2.addPoint([x+(1000*3600),y], true, true);
+                                serie2.addPoint([x+(1000*3600), y], true, true);
+
+                                //serie3.addPoint([x, 0, 3], true, true);
+                                //serie3.addPoint([x, 2, 10], true, true);
+                                //serie3.addPoint([x, 1, 5], true, true);
+                                //console.log('x: '+x+' y: '+y+' v: '+10);
 
                                 //updateYextreme();
                                 //console.log('new point: ' + x + '--' + toDate(x));
@@ -105,12 +110,12 @@
                             }, 1000);
                         },
                         click: function(e) {
-                            $tijd = Highcharts.dateFormat('%H:%M:%S', e.xAxis[0].value);
-                            // console.log($tijd, e.xAxis[0].value, e.yAxis[0].value );
+                            $tijd = Highcharts.dateFormat('%H:%M:%S', e.xAxis[1].value);
+                            console.log($tijd, e.xAxis[1].value, e.yAxis[1].value );
 
                             var pointx, pointy;
-                            pointx = e.xAxis[0].value;
-                            pointy = e.yAxis[0].value;
+                            pointx = e.xAxis[1].value;
+                            pointy = e.yAxis[1].value;
                             addBar(pointx, pointy);
 
 
@@ -131,7 +136,9 @@
                         'Click and drag in the plot area to zoom in' :
                         'Pinch the chart to zoom in'
                 },*/
-                xAxis: {
+                xAxis: [{
+                    categories: ['A', 'B', 'C']
+                } , {
                     type: 'datetime',
                     allowDecimals: false,
                     //tickInterval: 1000 * 60, // 7 * 24 * 3600 * 1000, // one week
@@ -144,8 +151,10 @@
                     minRange: 1000 * 30,
                     minorTickInterval: 'auto'
                     //maxPadding: 0.6
-                },
-                yAxis: {
+                }],
+                yAxis: [{
+                    categories: ['X', 'Y', 'Z']
+                }, {
                     title: {
                         text: 'Exchange rate'
                     },
@@ -153,19 +162,25 @@
                     min: (function() {
                         return 0.6;
                     })()
-                },
+                }],
                 tooltip: {
                     enabled: false
                 },
                 legend: {
-                    enabled: false
+                    enabled: true
                 },
                 labels: {
                     items: [{html:'', style: {left: '700px',top: '200px', fillColor: '#FF0000'}}]
                 },
-
                 series: [{
+                    type: 'heatmap',
+                    xAxis: 0,
+                    yAxis: 0,
+                    data: [[1,1,30],[2,2,10],[3,123]]
+                } , {
                     type: 'line',
+                    xAxis: 1,
+                    yAxis: 1,
                     name: 'USD naar EUR',
                     //pointInterval: 24 * 3600 * 1000,
                     pointInterval: 1000, // 1 seconde
@@ -288,6 +303,8 @@
 
                 }, {
                     type: 'columnrange',
+                    xAxis: 1,
+                    yAxis: 1,
                     inverted: false,
                     pointInterval: 1000,
                     color: '#FF4400'
@@ -295,8 +312,9 @@
                     //pointInterval: 1000
                 }, {
                     type: 'line',
-                    data: [0.8446],
-                    pointStart: Date.UTC(2014, 0, 01)
+                    xAxis: 1,
+                    yAxis: 1,
+                    data: [0.8446]
                 }],
                 plotOptions: {
                     series: {
@@ -311,8 +329,8 @@
             container = chart1.container;
             addEvent(container, 'tap', function (e) {
                 var pointx, pointy;
-                pointx = chart1.xAxis[0].toValue(chart1.pointer.lastValidTouch.x[0],false);
-                pointy = chart1.yAxis[0].toValue(chart1.pointer.lastValidTouch.y[0],false);
+                pointx = chart1.xAxis[1].toValue(chart1.pointer.lastValidTouch.x[0],false);
+                pointy = chart1.yAxis[1].toValue(chart1.pointer.lastValidTouch.y[0],false);
                 addBar(pointx, pointy);
             });
 
@@ -321,9 +339,9 @@
                 lastpoint = lastPoint();  // from ticker
                 if (pointy > lastpoint.y) {
                     //chart1.series[1].addPoint([{fillColor: "#659355", x:pointx ,y1:pointy, y2:pointy+1}],true,false,false);
-                    chart1.series[1].addPoint({color:'#00FF00', x:pointx ,low:pointy, high:(pointy+1)},true,false,false);
+                    chart1.series[2].addPoint({color:'#00FF00', x:pointx ,low:pointy, high:(pointy+1)},true,false,false);
                 } else {
-                    chart1.series[1].addPoint([pointx ,pointy-1, pointy],true,false,false);
+                    chart1.series[2].addPoint([pointx ,pointy-1, pointy],true,false,false);
                 }
                 /*console.log("tapped: " + pointx + ' afgerond: ' + Math.round(pointx) +
                         ' rate ' + pointy + ' datum: ' +
@@ -372,7 +390,7 @@
                 // the button action
             $('#button2').click(function() {
                 var chart = $('#container').highcharts();
-                var lastitem = chart.series[0].data[chart.series[0].data.length-1].x;
+                var lastitem = chart.series[1].data[chart.series[1].data.length-1].x;
                 //console.log(toDate(lastitem));
                 chart.xAxis[0].setExtremes(
                                 lastitem - (30 * 1000),
@@ -389,6 +407,7 @@
 	<body>
         <script src="./js/highcharts.src.js"></script>
         <script src="./js/highcharts-more.src.js"></script>
+        <script src="./js/heatmap.js"></script>
         <script src="./js/dark-unica.js"></script>
         <!--<script src="./js/exporting.js"></script>-->
 
