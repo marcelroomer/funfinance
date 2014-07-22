@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="ftp mroomer" persistUploadOnCheckin="false">
+  <component name="PublishConfigData" serverName="ftp mroomer" persistUploadOnCheckin="false">
     <serverData>
       <paths name="Diskstation">
         <serverdata>
@@ -16,7 +16,7 @@
       <paths name="ftp mroomer">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$/test" web="/" />
+            <mapping deploy="/" local="$PROJECT_DIR$/" web="/" />
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/highcharts" />
@@ -39,7 +39,6 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>
 
