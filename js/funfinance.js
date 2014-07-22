@@ -132,23 +132,44 @@ var defaultdata = [
  console.log(Highcharts.dateFormat('%H:%M:%S', time + i * 1000));
  }*/
 
+function heatmapdata(x) {
+    var chart, extremes, n, s, delta, data;
+    chart = $('#container').highcharts();
+    extremes = chart.yAxis[1].getExtremes();
+    data = [];
+    n = 8;
+    s = 5;
+    delta = (extremes.max - extremes.min) / n;
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < n; i++) {
+            data.push(
+                {
+                    x: x + (j * 1000),
+                    y: (extremes.min + 0.5 * delta) + (i * delta),
+                    value: Math.round((Math.random() * 100))
+                })
+        }
+    }
+    chart.series[0].setData(data)
+}
+
 function showBet(bet) {
     var chart = $('#container').highcharts();
     chart.renderer.label(
             "Bet: "+bet,
-        800,
+        750,
         10
         )
         .css({
-            fontWeight: 'normal',
+            fontWeight: 'bold',
+            fontSize: '24px',
             color: '#FFFFFF',
             textAlign: 'left',
-            backgroundImage: '../euro-70x70.png'
         })
         .attr({
             fill: '#66CCFF',
-            width: 60,
-            height: 18
+            width: 100,
+            height: 30
         })
         .add()
         .shadow(true);
@@ -158,21 +179,33 @@ function showCash(cash) {
     var chart = $('#container').highcharts();
     chart.renderer.label(
             "Cash: "+cash.toString(),
-        700,
+        30,
         10
         )
         .css({
-            fontWeight: 'normal',
+            fontWeight: 'bold',
+            fontSize: '24px',
             color: '#FFFFFF',
             textAlign: 'left'
         })
         .attr({
             fill: '#00FF00',
-            width: 60,
-            height: 20
+            width: 120,
+            height: 30
         })
         .add()
         .shadow(true);
+}
+
+function addCoin(p) {
+    var chart = $('#container').highcharts();
+    var x = chart.xAxis[1].toPixels(p.x);
+    console.log(' XXX: ' + x);
+    /*chart.renderer.image("/funfinance/images/euro-70x70.png",x-15,100,30,30)
+     .add();*/
+    $('#win').show().delay(800).queue(function(n) {
+        $(this).hide(); n();
+    });
 }
 
 function debugOut(message) {
@@ -213,22 +246,40 @@ function randomIntFromInterval(current) {
     //Random rand = new Random();
     var min = current - 0.005;
     var max = current + 0.005;
-    return (Math.random()*(max*1000-min*1000+1)+min*1000)/1000;
+    return (Math.random()*((max*1000)-(min*1000+1))+min*1000)/1000;
 }
 
 function setMinMax() {
     var chart = $('#container').highcharts();
     var lastitem = chart.series[1].data[chart.series[1].data.length-1].x;
     //console.log(toDate(lastitem));
+    var lengteSec = 30;
     chart.xAxis[1].setExtremes(
-            lastitem - (30 * 1000),
-            lastitem + (30 * 1000)
+            lastitem - ((lengteSec/4) * 1000),
+            lastitem + ((3*lengteSec/4) * 1000)
     );
 }
 
-function showYasExtremes() {
-    var chart = $('#container').highcharts(),
-        extremes = chart.xAxis[1].getExtremes();
+function resetMinMax() {
+    var chart = $('#container').highcharts();
+    chart.xAxis[1].setExtremes(null, null);
+
+}
+
+function setYasExtremes() {
+    var chart = $('#container').highcharts();
+    var lastitem = chart.series[1].data[chart.series[1].data.length-1].y;
+    var delta = 0.02;
+    chart.yAxis[1].setExtremes(
+            lastitem - (delta/2),
+            lastitem + (delta/2)
+    );
+}
+
+function showXasExtremes() {
+    var chart, extremes;
+    chart = $('#container').highcharts();
+    extremes = chart.xAxis[1].getExtremes();
 
     chart.renderer.label(
             'dataMin: '+ toDate(extremes.dataMin) +'<br/>'+
@@ -237,6 +288,29 @@ function showYasExtremes() {
             'max: '+ toDate(extremes.max) +'<br/>'+
             'userMin: '+ toDate(extremes.userMin) +'<br/>'+
             'userMax: '+ toDate(extremes.userMax) +'<br/>',
+        100,
+        100
+    )
+        .attr({
+            fill: '#FCFFC5',
+            zIndex: 8
+        })
+        .add();
+    //$(this).attr('disabled', true);
+}
+
+function showYasExtremes() {
+    var chart, extremes;
+    chart = $('#container').highcharts();
+    extremes = chart.yAxis[1].getExtremes();
+
+    chart.renderer.label(
+            'dataMin: '+ extremes.dataMin +'<br/>'+
+            'dataMax: '+ extremes.dataMax +'<br/>'+
+            'min: '+ extremes.min +'<br/>'+
+            'max: '+ extremes.max +'<br/>'+
+            'userMin: '+ extremes.userMin +'<br/>'+
+            'userMax: '+ extremes.userMax +'<br/>',
         100,
         100
     )

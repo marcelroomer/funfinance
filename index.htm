@@ -19,209 +19,282 @@
         <script src="./js/funfinance.js"></script>
 		<script type="text/javascript">
 
-            $(document).bind("pageinit", "chartPage", function(){
+            $(document).bind("pageinit", "chartPage", function() {
                 console.log("pageinit");
 
                 var chart1;
-                chart1 = new Highcharts.Chart({
-                chart: {
-                    renderTo: 'container',
-                    zoomType: 'x',
-                    events: {
-                        load: function() {
-                            var serie, actualLabel, zoomextreme;
-                            // set up the updating of the chart each second
-                            serie = this.series[1];
-                            serie2 = this.series[3];
-                            //serie3 = this.series[3];
+                //chart1 = new Highcharts.Chart({
+                var options = {
+                    chart: {
+                        backgroundColor:'transparent',
+                        renderTo: 'container',
+                        zoomType: 'x',
+                        events: {
+                            load: function () {
+                                var serie, actualLabel, zoomextreme;
+                                // set up the updating of the chart each second
+                                serie = this.series[1];
+                                serie2 = this.series[3];
+                                //serie3 = this.series[3];
 
-                            this.series[1].hide();
-                            this.series[2].hide();
-                            this.series[3].hide();
+//                                this.series[1].hide();
+//                                this.series[2].hide();
+//                                this.series[3].hide();
 
-                            showCash(cash);
-                            showBet(bet);
-                            setInterval(function() {
-                                // var x = (new Date()).getTime(), // current time
-                                var lastpoint = serie.data[serie.data.length-1];
-                                var x = lastpoint.x + 1000,
-                                    y = randomIntFromInterval(lastpoint.y);
-                                serie.addPoint([x, y], true, true); // tickerPoint
+                                showCash(cash);
+                                showBet(bet);
+                                setInterval(function () {
+                                    // var x = (new Date()).getTime(), // current time
+                                    var lastpoint = serie.data[serie.data.length - 1];
+                                    var x = lastpoint.x + 1000,
+                                            y = randomIntFromInterval(lastpoint.y);
+                                    serie.addPoint([x, y], true, true); // tickerPoint
 
-                                serie2.addPoint([x+(1000*3600), y], true, true); // paddingPoint
+                                    serie2.addPoint([x + (1000 * 3600), y], true, true); // paddingPoint
 
-                                //serie3.addPoint([x, 0, 3], true, true);
-                                //serie3.addPoint([x, 2, 10], true, true);
-                                //serie3.addPoint([x, 1, 5], true, true);
-                                //console.log('x: '+x+' y: '+y+' v: '+10);
+                                    detectIntersection(serie.data[serie.data.length - 1]);
+                                    heatmapdata(x);
+                                }, 2000);
+                            },
+                            click: function (e) {
+                                $tijd = Highcharts.dateFormat('%H:%M:%S', e.xAxis[1].value);
+                                //console.log($tijd, e.xAxis[1].value, e.yAxis[1].value);
 
-                                //updateYextreme();
-                                //console.log('new point: ' + x + '--' + toDate(x));
-                                //showActual(y);
-                                //serie.chart.options.labels.items[0].html = y;
-                                //serie.chart.render();
-                                //serie.chart.redraw();
-                            }, 1000);
-                        },
-                        click: function(e) {
-                            $tijd = Highcharts.dateFormat('%H:%M:%S', e.xAxis[1].value);
-                            console.log($tijd, e.xAxis[1].value, e.yAxis[1].value );
-
-                            var pointx, pointy;
-                            pointx = e.xAxis[1].value;
-                            pointy = e.yAxis[1].value;
-                            addBar(pointx, pointy);
-
-
-                            /*x = point.plotX ; //+ this.plotLeft + 10;
-                            y = point.plotY ; //+ this.plotTop - 10;
-                            this.renderer.image('./euro-70x70.png',x, y, 30, 30).add();*/
-
-                            cash -= bet;
-                            showCash(cash);
+                                var pointx, pointy;
+                                pointx = e.xAxis[1].value;
+                                pointy = e.yAxis[1].value;
+                                addBar(pointx, pointy);
+                                /*x = point.plotX ; //+ this.plotLeft + 10;
+                                y = point.plotY ; //+ this.plotTop - 10;
+                                this.renderer.image('./euro-70x70.png',x, y, 30, 30).add();*/
+                            }
                         }
-                    }
-                },
-                title: {
-                    text: 'USD - EUR 2006 tot 2008'
-                },
-    /*            subtitle: {
-                    text: document.ontouchstart === undefined ?
-                        'Click and drag in the plot area to zoom in' :
-                        'Pinch the chart to zoom in'
-                },*/
-                xAxis: [{
-                    categories: ['A', 'B', 'C']
-                } , {
-                    type: 'datetime',
-                    allowDecimals: false,
-                    //tickInterval: 1000 * 60, // 7 * 24 * 3600 * 1000, // one week
-                    //startOnTick: false,
-                    //endOnTick: true,
-                    //min: Date.UTC(2014, 0, 01),
-                    //userMin: 1388535490000,
-                    //max: Date.UTC(2014, 0, 01) + (3600 * 1000),
-                    //userMax: 1388535517000,
-                    minRange: 1000 * 10,
-                    minorTickInterval: 'auto'
-                    //maxPadding: 0.6
-                }],
-                yAxis: [{
-                    categories: ['X', 'Y', 'Z']
-                }, {
-                    title: {
-                        text: 'Exchange rate'
                     },
-                    max: 0.8,
-                    min: (function() {
-                        return 0.6;
-                    })()
-                }],
-                tooltip: {
-                    enabled: true
-                },
-                legend: {
-                    enabled: true
-                },
-                labels: {
-                    items: [{html:'', style: {left: '700px',top: '200px', fillColor: '#FF0000'}}]
-                },
-                series: [{
-                    type: 'heatmap',
-                    rowsize: 0.05,
-                    colsize: 1000,
-                    xAxis: 1,
-                    yAxis: 1,
-                    //data: [[1,1,30],[2,2,10],[3,123]]
-                    data: [{x:1388535508700,y:0.65,value:30},{x:1388535508700,y:0.70,value:10},{x:1388535508700,y:0.75,value:80}] // xas=1 yas=0
-                } , {
-                    type: 'line',
-                    xAxis: 1,
-                    yAxis: 1,
-                    name: 'USD naar EUR',
-                    //pointInterval: 24 * 3600 * 1000,
-                    pointInterval: 1000, // 1 seconde
-                    pointStart: Date.UTC(2014, 0, 01),
-                    data: [{}]
-                    //data: defaultdata
+                    title: {  text: 'USD - EUR 2006 tot 2008' },
+                    xAxis: [{
+                        categories: ['A', 'B', 'C']
+                    } , {
+                        type: 'datetime',
+                        allowDecimals: false,
+                        //tickInterval: 1000 * 60, // 7 * 24 * 3600 * 1000, // one week
+                        //startOnTick: false,
+                        //endOnTick: true,
+                        //min: Date.UTC(2014, 0, 01),
+                        //userMin: 1388535490000,
+                        //max: Date.UTC(2014, 0, 01) + (3600 * 1000),
+                        //userMax: 1388535517000,
+                        minRange: 1000 * 10
+                        //minorTickInterval: 'auto'
+                        //maxPadding: 0.6
+                    }],
+                    yAxis: [{
+                        title: { text: null },
+                        categories: ['X', 'Y', 'Z']
+                    }, {
+                        title: { text: null },
+                        opposite: true,
+                        //minorTickInterval: 'auto',
+                        max: 0.8, min: (function() {
+                            return 0.6;
+                        })()
+                    }],
+                    tooltip: {
+                        enabled: true
+                        /*formatter: function() {
+                            if (this.series.name == chart1.series[0].name) {
+                                return '<span style="font-size:14px">{point.point.y:.5f}</span><br/>' +
+                                'Change <b>{point.value}%</b><br/>'
+                            } else {
+                                return false
+                            }
+                        }*/
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    labels: {
+                        items: [{html:'',
+                            style: { left: '700px',top: '200px', fillColor: '#FF0000'}}]
+                    },
+                    series: [{
+                        type: 'heatmap',
+                        rowsize: 0.03,
+                        colsize: 1000,
+                        xAxis: 1,
+                        yAxis: 1,
+                        allowPointSelect: true,
+                        enableMouseTracking: true,
+                        cursor: 'pointer',
+                        states: {
+                          hover: {
+                              enabled: false,
+                              //color: '#BADA55',
+                              borderColor: '#000000',
+                              borderWidth: 2
+                            },
+                          normal: {
+                                animation: false
+                          },
+                          select: {
+                              enabled: false
+                          }
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size:14px">{point.point.y:.5f}</span><br/>',
+                            pointFormat: 'Change <b>{point.value}%</b><br/>'
+                            //pointFormat: 'Possibility: <b>{point.value}%</b><br/>'
+                        },
+                        //data: [[1,1,30],[2,2,10],[3,123]]
+                        data: data = [{x: 1388535508700,y: 0.65, value:30},{x:1388535508700,y:0.70,value:10},{x: 1388535508700,y: 0.75, value:80}] // xas=1 yas=0
+                    } , {
+                        type: 'line',
+                        xAxis: 1,
+                        yAxis: 1,
+                        lineWidth: 4,
+                        name: 'USD naar EUR',
+                        //pointInterval: 24 * 3600 * 1000,
+                        pointInterval: 1000, // 1 seconde
+                        pointStart: Date.UTC(2014, 0, 01),
+                        //data: [{}]
+                        data: defaultdata,
+                        tooltip: { enabled: false}
 
-                }, {
-                    type: 'columnrange',
-                    xAxis: 1,
-                    yAxis: 1,
-                    inverted: false,
-                    pointInterval: 1000,
-                    color: '#FF4400'
-                    //data: [[-9.7, 60]]
-                    //pointInterval: 1000
-                }, {
-                    type: 'line',
-                    xAxis: 1,
-                    yAxis: 1,
-                    data: [0.8446]
-                }],
-                plotOptions: {
-                    series: {
-                        pointWidth: 15
+                    }, {
+                        type: 'columnrange',
+                        xAxis: 1,
+                        yAxis: 1,
+                        inverted: false,
+                        pointInterval: 1000,
+                        color: '#FF4400'
+                        //data: [[-9.7, 60]]
+                        //pointInterval: 1000
+                    }, {
+                        type: 'line',
+                        xAxis: 1,
+                        yAxis: 1,
+                        data: [0.8446]
+                    }],
+                    plotOptions: {
+                        series: {
+                            pointWidth: 15,
+                            events : {
+                                click: function (e) {
+                                    $tijd = Highcharts.dateFormat('%H:%M:%S', e.point.x);
+                                    console.log($tijd, e.point.x, e.point.y);
+                                }
+                            }
+                        }
+                    },
+                    colorAxis: {
+                        min: 0,
+                        minColor: 'rgba(255, 0, 0, 0.5)',
+                        maxColor: 'rgba(0, 255, 0, 0.5)'
+                        //maxColor: Highcharts.getOptions().colors[0]
+                    },
+                    exporting : { buttons : { contextButton : {enabled:false }}},
+                    credits : { enabled : true, text :'mroomer 2014'}};
+
+                var chart1 = new Highcharts.Chart(options);
+                /*var yql_query_url = "http://finance.google.com/finance/info?client=ig&q=NASDAQ:GOOG";
+                $.getJSON(yql_query_url, function(json) {
+                    options.xAxis.categories = json[0]['data'];
+                    options.series[1] = json[1];
+                    chart1 = new Highcharts.Chart(options);
+                });*/
+
+                var addEvent = Highcharts.addEvent,
+                container = chart1.container;
+                addEvent(container, 'tap', function (e) {
+                    var pointx, pointy;
+                    pointx = chart1.xAxis[1].toValue(chart1.pointer.lastValidTouch.x[0],false);
+                    pointy = chart1.yAxis[1].toValue(chart1.pointer.lastValidTouch.y[0],false);
+                    addBar(pointx, pointy);
+                });
+
+                function addBar(pointx, pointy) {
+                    var lastpoint;
+                    lastpoint = lastPoint();  // from ticker
+                    pointx = Math.round(pointx/1000)*1000; // only on whole seconds
+                    if ((lastpoint.x + 1000) > pointx) return;
+                    if (pointy > lastpoint.y) {
+                        //chart1.series[1].addPoint([{fillColor: "#659355", x:pointx ,y1:pointy, y2:pointy+1}],true,false,false);
+                        chart1.series[2].addPoint({color:'#00FF00', x:pointx ,low:pointy, high:(pointy+1)},true,false,false);
+                    } else {
+                        chart1.series[2].addPoint([pointx ,pointy-1, pointy],true,false,false);
                     }
-                },
-                colorAxis: {
-                    min: 0,
-                    minColor: 'rgba(255,0,0,0.3)',
-                    maxColor: Highcharts.getOptions().colors[0]
-                },
-                exporting : { buttons : { contextButton : { enabled: false }}},
-                credits : { enabled : true, text : 'mroomer 2014'}
-            });
 
-            $.getJSONP("http://finance.google.com/finance/info?client=ig&q=NASDAQ:GOOG", function(json) {
-                options.xAxis.categories = json[0]['data'];
-                options.series[1] = json[1];
-                chart = new Highcharts.Chart(options);
-            });
+                    /*console.log("tapped: " + pointx + ' rate ' + pointy +
+                                ' datum: ' + toDate(pointx) +
+                                ' 1000st: ' +  (Math.round(pointx/1000))*1000);*/
 
-            var addEvent = Highcharts.addEvent,
-            container = chart1.container;
-            addEvent(container, 'tap', function (e) {
-                var pointx, pointy;
-                pointx = chart1.xAxis[1].toValue(chart1.pointer.lastValidTouch.x[0],false);
-                pointy = chart1.yAxis[1].toValue(chart1.pointer.lastValidTouch.y[0],false);
-                addBar(pointx, pointy);
-            });
-
-            function addBar(pointx, pointy) {
-                var lastpoint;
-                lastpoint = lastPoint();  // from ticker
-                if (pointy > lastpoint.y) {
-                    //chart1.series[1].addPoint([{fillColor: "#659355", x:pointx ,y1:pointy, y2:pointy+1}],true,false,false);
-                    chart1.series[2].addPoint({color:'#00FF00', x:pointx ,low:pointy, high:(pointy+1)},true,false,false);
-                } else {
-                    chart1.series[2].addPoint([pointx ,pointy-1, pointy],true,false,false);
+                    // TODO: Calculate Cash
+                    cash -= bet;
+                    console.log(cash);
+                    showCash(cash);
                 }
-                /*console.log("tapped: " + pointx + ' afgerond: ' + Math.round(pointx) +
-                        ' rate ' + pointy + ' datum: ' +
-                        '  date ' + toDate(pointx));*/
-            }
 
-            function showActual(actual) {
-                var mychart, y;
-                mychart = $('#container').highcharts();
-                //y = xyAs.toPixels(actual);
-                mychart.options.labels.items[0].html = actual;
-                mychart = new Highcharts.Chart(mychart.options);
-                mychart.render();
-            }
+                function showActual(actual) {
+                    var mychart, y;
+                    mychart = $('#container').highcharts();
+                    //y = xyAs.toPixels(actual);
+                    mychart.options.labels.items[0].html = actual;
+                    mychart = new Highcharts.Chart(mychart.options);
+                    mychart.render();
+                }
 
-            // the button action
-            $('#button').click(function() {
-                showYasExtremes();
-            });
+                var bsComparator = function(a, b) {
+                    if (a.x < b.x) { return -1; }
+                    if (a.x > b.x) { return 1; }
+                    return 0;
+                };
+                var binarySearch = function(series_data, point) {
+                    var low = 0, high = series_data.length - 1,
+                            i, comparison;
+                    while (low <= high) {
+                        i = Math.floor((low + high) / 2);
+                        comparison = bsComparator(series_data[i], point);
+                        if (comparison < 0) { low = i + 1; continue; }
+                        if (comparison > 0) { high = i - 1; continue; }
+                        return i;
+                    }
+                    return null;
+                };
+
+                function detectIntersection(p) {
+                    var mychart, td, ti, tb, i;
+                    mychart = $('#container').highcharts();
+                    td = mychart.series[1].data;
+                    var pointIndex = binarySearch(td, p);
+                    i = td[pointIndex].x;
+                    //console.log('A => px: ' + p.x + ' i: ' + i);
+                    tb = mychart.series[2].data;
+                    var pointIndex = binarySearch(tb, p);
+                    if (pointIndex != null) {
+                        addCoin(p);
+                        i = tb[pointIndex].high;
+                        //console.log('B => plow: ' + p.x + ' i: ' + i)
+                    }
+                }
 
                 // the button action
-            $('#button2').click(function() {
-                setMinMax();
-            })
+                $('#button').click(function() {
+                    showYasExtremes();
+                });
 
+                // the button action
+                $('#buttonYas').click(function() {
+                    setYasExtremes();
+                })
+
+                    // the button action
+                $('#buttonZoom').click(function() {
+                    setMinMax();
+                })
+
+                // the button action
+                $('#buttonReset').click(function() {
+                    resetMinMax();
+                })
             }); // createChart
 
             //$(document).ready(createChart);
@@ -244,9 +317,16 @@
 
             <div data-role="content" role="main" class="ui-content" >
                 <div id="container" class="containerstyle"></div>
-                <button id="button2">MinMax</button>
-                <button id="button">Get Y axis extremes</button>
-                <div id="debugDiv" class="debug"></div>
+                <div id="win">
+                    <img src="images/5euro.png" style="height: 200px">
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a"><button id="buttonZoom" data-mini="true">X-as Zoom</button></div>
+                    <div class="ui-block-b"><button id="buttonReset" data-mini="true">Show all</button></div>
+                    <!--<div class="ui-block-c"><button id="buttonYas" data-mini="true">Y-as Zoom</button></div>-->
+                </div>
+                <!--<button id="button">Get Y axis extremes</button>-->
+                <!--<div id="debugDiv" class="debug"></div>-->
             </div><!-- /content -->
 
             <!--<div data-role="footer" data-position="fixed" data-fullscreen="true">
